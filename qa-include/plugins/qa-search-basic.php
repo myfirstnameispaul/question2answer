@@ -27,9 +27,9 @@ class qa_search_basic
 
 		// Get words from each textual element
 
-		$titlewords = array_unique(qa_string_to_words($title));
+		$titlewords = array_unique(qa_string_to_words((string)$title));
 		$contentcount = array_count_values(qa_string_to_words($text));
-		$tagwords = array_unique(qa_string_to_words($tagstring));
+		$tagwords = array_unique(qa_string_to_words((string)$tagstring));
 		$wholetags = array_unique(qa_tagstring_to_tags($tagstring));
 
 		// Map all words to their word IDs
@@ -46,8 +46,9 @@ class qa_search_basic
 
 		$contentwordidcounts = array();
 		foreach ($contentcount as $word => $count) {
-			if (isset($wordtoid[$word]))
+			if (isset($wordtoid[$word])) {
 				$contentwordidcounts[$wordtoid[$word]] = $count;
+			}
 		}
 
 		qa_db_contentwords_add_post_wordidcounts($postid, $type, $questionid, $contentwordidcounts);
@@ -113,7 +114,7 @@ class qa_search_basic
 
 		$words = qa_string_to_words($query);
 
-		$questions = qa_db_select_with_pending(
+		$questions = qa_service('dbselect')->selectWithPending(
 			qa_db_search_posts_selectspec($userid, $words, $words, $words, $words, trim($query), $start, $fullcontent, $count)
 		);
 

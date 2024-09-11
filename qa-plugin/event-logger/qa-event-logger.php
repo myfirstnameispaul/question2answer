@@ -44,7 +44,7 @@ class qa_event_logger
 					'KEY ipaddress (ipaddress),' .
 					'KEY userid (userid),' .
 					'KEY event (event)' .
-					') ENGINE=MyISAM DEFAULT CHARSET=utf8';
+					') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
 			} else {
 				// table exists: check it has the correct schema
 				$column = qa_service('database')->query('SHOW COLUMNS FROM ^eventlog WHERE Field="ipaddress"')->fetchNextAssocOrFail();
@@ -149,10 +149,10 @@ class qa_event_logger
 
 		if (is_array($value))
 			$text = 'array(' . count($value) . ')';
-		elseif (qa_strlen($value) > 40)
+		elseif (qa_strlen((string)$value) > 40)
 			$text = qa_substr($value, 0, 38) . '...';
 		else
-			$text = $value;
+			$text = (string)$value;
 
 		return strtr($text, "\t\n\r", '   ');
 	}
@@ -176,17 +176,17 @@ class qa_event_logger
 
 		if (qa_opt('event_logger_to_files')) {
 			// Substitute some placeholders if certain information is missing
-			if (!strlen($userid))
+			if (!strlen((string)$userid))
 				$userid = 'no_userid';
 
-			if (!strlen($handle))
+			if (!strlen((string)$handle))
 				$handle = 'no_handle';
 
-			if (!strlen($cookieid))
+			if (!strlen((string)$cookieid))
 				$cookieid = 'no_cookieid';
 
 			$ip = qa_remote_ip_address();
-			if (!strlen($ip))
+			if (!strlen((string)$ip))
 				$ip = 'no_ipaddress';
 
 			// Build the log file line to be written

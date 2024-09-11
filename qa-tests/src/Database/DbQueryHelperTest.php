@@ -2,12 +2,12 @@
 
 use Q2A\Database\DbQueryHelper;
 
-class DbQueryHelperTest extends PHPUnit_Framework_TestCase
+class DbQueryHelperTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var DbQueryHelper */
 	private $helper;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$this->helper = new DbQueryHelper();
 	}
@@ -53,27 +53,18 @@ class DbQueryHelperTest extends PHPUnit_Framework_TestCase
 
 	public function test__expandParameters_incorrect_groups_error()
 	{
-		$this->setExpectedException('Q2A\Database\Exceptions\SelectSpecException');
+		$this->expectException('Q2A\Database\Exceptions\SelectSpecException');
 		$this->helper->expandParameters('INSERT INTO table(field1, field2) VALUES ?', [[ [1, 2], [3] ]]);
 	}
 
 	public function test__applyTableSub()
 	{
-		$result = $this->helper->applyTableSub('SELECT * FROM ^options');
-		$this->assertSame('SELECT * FROM qa_options', $result);
-
-		$result = $this->helper->applyTableSub('SELECT * FROM ^users WHERE userid=?');
-		$this->assertSame('SELECT * FROM qa_users WHERE userid=?', $result);
-	}
-
-	public function test__applyTableSub_users_prefix()
-	{
-		define('QA_MYSQL_USERS_PREFIX', 'base_');
+		$prefix = QA_MYSQL_TABLE_PREFIX;
 
 		$result = $this->helper->applyTableSub('SELECT * FROM ^options');
-		$this->assertSame('SELECT * FROM qa_options', $result);
+		$this->assertSame("SELECT * FROM {$prefix}options", $result);
 
 		$result = $this->helper->applyTableSub('SELECT * FROM ^users WHERE userid=?');
-		$this->assertSame('SELECT * FROM base_users WHERE userid=?', $result);
+		$this->assertSame("SELECT * FROM {$prefix}users WHERE userid=?", $result);
 	}
 }

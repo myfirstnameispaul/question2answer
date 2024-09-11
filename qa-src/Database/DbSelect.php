@@ -83,7 +83,7 @@ class DbSelect
 
 	/**
 	 * Return the data specified by a single $selectspec - see long comment above.
-	 * @param $selectspec
+	 * @param array $selectspec
 	 * @return array|mixed
 	 */
 	public function singleSelect(array $selectspec)
@@ -107,7 +107,7 @@ class DbSelect
 		}
 
 		$query = substr($query, 0, -2);
-		if (isset($selectspec['source']) && strlen($selectspec['source']) > 0) {
+		if (strlen($selectspec['source'] ?? '') > 0) {
 			$query .= ' FROM ' . $selectspec['source'];
 		}
 
@@ -200,7 +200,7 @@ class DbSelect
 				}
 			}
 
-			if (isset($selectspec['source']) && strlen($selectspec['source']) > 0) {
+			if (strlen($selectspec['source'] ?? '') > 0) {
 				$subquery .= ' FROM ' . $selectspec['source'];
 			}
 
